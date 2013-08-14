@@ -25,6 +25,12 @@
 
 static NSArray* _cdnHosts;
 
+/*
+ * Added to allow upload progress to be watched
+ * AS 14-Aug-13
+ */
+NSString *const FacebookUploadProgressNotification = @"com.facebook.sdk:UploadProgressNotification";
+
 @interface FBURLConnection ()
 
 @property (nonatomic, retain) NSURLConnection *connection;
@@ -215,6 +221,34 @@ didReceiveResponse:(NSURLResponse *)response {
     didReceiveData:(NSData *)data {
     [self.data appendData:data];
 }
+
+/*
+ * Added to allow upload progress to be watched
+ * AS 14-Aug-13
+ */
+- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
+    
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObjects:
+                              [NSArray arrayWithObjects:
+                               [NSNumber numberWithInt:totalBytesWritten],
+                               [NSNumber numberWithInt:totalBytesExpectedToWrite],
+                               nil]
+                                                         forKeys:
+                              [NSArray arrayWithObjects:
+                               @"bytes",
+                               @"totalBytes",
+                               nil]
+                              ];
+    
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:FacebookUploadProgressNotification
+                                                        object:self
+                                                      userInfo:userInfo];
+    
+    
+    
+}
+
 
 - (void)connection:(NSURLConnection *)connection
   didFailWithError:(NSError *)error {

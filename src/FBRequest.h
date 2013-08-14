@@ -21,6 +21,13 @@
 #import "FBOpenGraphObject.h"
 #import "FBOpenGraphAction.h"
 
+
+/*
+ * Added to allow upload progress to be watched
+ * AS 14-Aug-13
+ */
+extern NSString *const FacebookUploadProgressNotification;
+
 /*! The base URL used for graph requests */
 extern NSString* const FBGraphBasePath __attribute__((deprecated));
 
